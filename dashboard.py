@@ -198,13 +198,13 @@ def render_importance_bar(importances, feat_names, title):
 def render_team_card(col, team_name, side_label, prob_xgb, prob_tab, prob_ftt, actual_result):
     with col:
         won        = actual_result == 1
-        side_color = "#1a75ff" if "Blue" in side_label else "#cc0000"
+        side_color = "#1043a0" if "Blue" in side_label else "#c0392b"
         st.markdown(
             f"<div style='background:{side_color};padding:8px 14px;border-radius:8px;"
-            f"text-align:center;color:white;font-weight:bold;font-size:16px;margin-bottom:8px'>"
+            f"text-align:center;color:white;font-weight:bold;font-size:1rem;margin-bottom:8px'>"
             f"{team_name} — {side_label}</div>", unsafe_allow_html=True
         )
-        rc = "#2ecc71" if won else "#e74c3c"
+        rc = "#1a6b34" if won else "#c0392b"
         rl = "✅ Victoire (réel)" if won else "❌ Défaite (réel)"
         st.markdown(
             f"<div style='background:{rc};padding:6px;border-radius:6px;"
@@ -292,6 +292,12 @@ with tab_load:
         fig = render_timeline_2teams(probs_blue, probs_red, blue_team, red_team, CHECKPOINTS)
         st.pyplot(fig, use_container_width=True)
         plt.close()
+        st.caption(
+            f"Graphique linéaire — évolution de P(victoire) normalisée pour {blue_team} (bleu) "
+            f"et {red_team} (rouge) aux checkpoints 10, 15 et 20 min. "
+            f"Trait plein = TabNet, pointillé-triangle = FT-Transformer, tirets = XGBoost. "
+            f"La ligne horizontale marque le seuil 50 %."
+        )
 
         st.divider()
 
@@ -305,7 +311,7 @@ with tab_load:
                                  probs_blue[cp][0], probs_blue[cp][1], probs_blue[cp][2],
                                  int(blue_row['result']))
                 with col_mid:
-                    st.markdown("<div style='text-align:center;font-size:28px;margin-top:60px'>⚔️</div>",
+                    st.markdown("<div style='text-align:center;font-size:1.75rem;margin-top:60px' title='Versus'>⚔️</div>",
                                 unsafe_allow_html=True)
                 render_team_card(col_red, red_team, "🔴 Red side",
                                  probs_red[cp][0], probs_red[cp][1], probs_red[cp][2],
@@ -331,9 +337,11 @@ with tab_load:
             with col_l1:
                 fig = render_importance_bar(local_b, feat_names, f"{blue_team} — contribution locale")
                 st.pyplot(fig, use_container_width=True); plt.close()
+                st.caption(f"Barres horizontales — contribution de chaque variable à la prédiction TabNet pour {blue_team} sur ce match. Couleurs : jaune = gold, violet = XP, vert = CS, rouge = kills/deaths, bleu = objectifs.")
             with col_l2:
                 fig = render_importance_bar(local_r, feat_names, f"{red_team} — contribution locale")
                 st.pyplot(fig, use_container_width=True); plt.close()
+                st.caption(f"Barres horizontales — contribution de chaque variable à la prédiction TabNet pour {red_team} sur ce match. Même code couleur que le graphique de gauche.")
 
         with tab_glob:
             st.markdown("Importance **moyenne** des features TabNet sur l'ensemble du jeu de test.")
@@ -345,6 +353,7 @@ with tab_load:
                 f"Masques d'attention TabNet (moyennés) — @{CP_LABELS[cp_key_g]}"
             )
             st.pyplot(fig, use_container_width=True); plt.close()
+            st.caption(f"Barres horizontales — importance moyenne des variables pour le modèle TabNet @{CP_LABELS[cp_key_g]}, calculée sur l'ensemble du jeu de test. Une valeur plus élevée indique une variable plus déterminante.")
 
         match_loaded = True
 
@@ -405,6 +414,7 @@ if manual_stats is not None:
     st.subheader("📈 Évolution de la prédiction")
     fig = render_timeline_1team(probs_manual, ['10min', '15min'])
     st.pyplot(fig, use_container_width=True); plt.close()
+    st.caption("Graphique linéaire — évolution de P(victoire) de ton équipe aux checkpoints 10 et 15 min selon les trois modèles. Trait plein = TabNet, pointillé-triangle = FT-Transformer, tirets = XGBoost. La ligne horizontale marque le seuil 50 %.")
 
     st.divider()
 
@@ -416,14 +426,14 @@ if manual_stats is not None:
             p_xgb, p_tab, p_ftt = probs_manual[cp]
             col1, col2, col3 = st.columns(3)
             for col, name, prob in [(col1, "XGBoost", p_xgb), (col2, "TabNet", p_tab), (col3, "FT-Transformer", p_ftt)]:
-                color = "#2ecc71" if prob >= 0.6 else "#e74c3c" if prob <= 0.4 else "#f39c12"
+                color = "#1a6b34" if prob >= 0.6 else "#c0392b" if prob <= 0.4 else "#7a5000"
                 label = "✅ Victoire probable" if prob >= 0.6 else "❌ Défaite probable" if prob <= 0.4 else "⚖️ Match serré"
                 with col:
                     st.subheader(f"🤖 {name}")
                     st.metric("P(victoire de ton équipe)", f"{prob:.1%}")
                     st.markdown(
                         f"<div style='background:{color};padding:12px;border-radius:8px;"
-                        f"text-align:center;font-size:18px;font-weight:bold;color:white'>{label}</div>",
+                        f"text-align:center;font-size:1.125rem;font-weight:bold;color:white'>{label}</div>",
                         unsafe_allow_html=True
                     )
 
@@ -443,6 +453,7 @@ if manual_stats is not None:
         fig = render_importance_bar(local_imp, feat_names_m,
                                     f"Ton équipe — contribution locale @{CP_LABELS[cp_key_m]}")
         st.pyplot(fig, use_container_width=True); plt.close()
+        st.caption(f"Barres horizontales — contribution de chaque variable à la prédiction TabNet pour cette saisie @{CP_LABELS[cp_key_m]}. Couleurs : jaune = gold, violet = XP, vert = CS, rouge = kills/deaths, bleu = objectifs.")
 
     with tab_glob_m:
         st.markdown("Importance **moyenne** des features TabNet sur l'ensemble du jeu de test.")
@@ -454,6 +465,7 @@ if manual_stats is not None:
             f"Masques d'attention TabNet (moyennés) — @{CP_LABELS[cp_key_gm]}"
         )
         st.pyplot(fig, use_container_width=True); plt.close()
+        st.caption(f"Barres horizontales — importance moyenne des variables pour TabNet @{CP_LABELS[cp_key_gm]} sur l'ensemble du jeu de test. Une valeur plus élevée indique une variable plus déterminante.")
 
 # ─── Performances de référence ────────────────────────────────────────────────
 if match_loaded or manual_stats is not None:
