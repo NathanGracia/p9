@@ -12,8 +12,8 @@ import matplotlib.patches as mpatches
 
 st.set_page_config(page_title="LoL Pro Match Predictor", page_icon="🎮", layout="wide")
 
-CHECKPOINTS = ['10min', '15min', '20min']
-CP_LABELS   = {'10min': '10 min', '15min': '15 min', '20min': '20 min'}
+CHECKPOINTS = ['10min', '15min', '20min', '25min']
+CP_LABELS   = {'10min': '10 min', '15min': '15 min', '20min': '20 min', '25min': '25 min'}
 
 # ─── Chargement modèles ──────────────────────────────────────────────────────
 @st.cache_resource
@@ -66,7 +66,7 @@ def build_stats(row, is_blue, checkpoint):
         'assistsat10':  v('assistsat10'),
         'deathsat10':   v('deathsat10'),
     }
-    if checkpoint in ('15min', '20min'):
+    if checkpoint in ('15min', '20min', '25min'):
         stats.update({
             'firstdragon':  v('firstdragon'),
             'firstherald':  v('firstherald'),
@@ -78,7 +78,7 @@ def build_stats(row, is_blue, checkpoint):
             'assistsat15':  v('assistsat15'),
             'deathsat15':   v('deathsat15'),
         })
-    if checkpoint == '20min':
+    if checkpoint in ('20min', '25min'):
         stats.update({
             'golddiffat20': sign * v('golddiffat20'),
             'xpdiffat20':   sign * v('xpdiffat20'),
@@ -86,6 +86,16 @@ def build_stats(row, is_blue, checkpoint):
             'killsat20':    v('killsat20'),
             'assistsat20':  v('assistsat20'),
             'deathsat20':   v('deathsat20'),
+        })
+    if checkpoint == '25min':
+        stats.update({
+            'firstbaron':   v('firstbaron'),
+            'golddiffat25': sign * v('golddiffat25'),
+            'xpdiffat25':   sign * v('xpdiffat25'),
+            'csdiffat25':   sign * v('csdiffat25'),
+            'killsat25':    v('killsat25'),
+            'assistsat25':  v('assistsat25'),
+            'deathsat25':   v('deathsat25'),
         })
     return stats
 
@@ -386,21 +396,49 @@ with tab_manual:
         assists15_m  = st.number_input("Assists", 0, 50, 7, key="a15m")
         deaths15_m   = st.number_input("Deaths",  0, 30, 4, key="d15m")
 
+    col_m3, col_m4 = st.columns(2)
+    with col_m3:
+        st.subheader("@20 minutes")
+        golddiff20_m = st.slider("Avantage gold", -20000, 20000, 0, 100, key="g20m")
+        xpdiff20_m   = st.slider("Avantage XP",   -14000, 14000, 0, 100, key="x20m")
+        csdiff20_m   = st.slider("Avantage CS",   -300,   300,   0, 1,   key="c20m")
+        kills20_m    = st.number_input("Kills",   0, 40, 6, key="k20m")
+        assists20_m  = st.number_input("Assists", 0, 70, 10, key="a20m")
+        deaths20_m   = st.number_input("Deaths",  0, 40, 6, key="d20m")
+
+    with col_m4:
+        st.subheader("@25 minutes")
+        fb25_m       = st.toggle("Premier Baron", key="fb25_m")
+        golddiff25_m = st.slider("Avantage gold", -28000, 28000, 0, 100, key="g25m")
+        xpdiff25_m   = st.slider("Avantage XP",   -18000, 18000, 0, 100, key="x25m")
+        csdiff25_m   = st.slider("Avantage CS",   -400,   400,   0, 1,   key="c25m")
+        kills25_m    = st.number_input("Kills",   0, 50, 8, key="k25m")
+        assists25_m  = st.number_input("Assists", 0, 90, 14, key="a25m")
+        deaths25_m   = st.number_input("Deaths",  0, 50, 8, key="d25m")
+
     if st.button("🔮 Prédire", type="primary"):
+        base10 = {
+            'side': 1, 'firstblood': int(fb_m),
+            'golddiffat10': golddiff10_m, 'xpdiffat10': xpdiff10_m, 'csdiffat10': csdiff10_m,
+            'killsat10': kills10_m, 'assistsat10': assists10_m, 'deathsat10': deaths10_m,
+        }
+        base15 = {
+            'firstdragon': int(fd_m), 'firstherald': int(fh_m), 'firsttower': int(ft_m),
+            'golddiffat15': golddiff15_m, 'xpdiffat15': xpdiff15_m, 'csdiffat15': csdiff15_m,
+            'killsat15': kills15_m, 'assistsat15': assists15_m, 'deathsat15': deaths15_m,
+        }
+        base20 = {
+            'golddiffat20': golddiff20_m, 'xpdiffat20': xpdiff20_m, 'csdiffat20': csdiff20_m,
+            'killsat20': kills20_m, 'assistsat20': assists20_m, 'deathsat20': deaths20_m,
+        }
         st.session_state['manual_stats'] = {
-            '10min': {
-                'side': 1, 'firstblood': int(fb_m),
-                'golddiffat10': golddiff10_m, 'xpdiffat10': xpdiff10_m, 'csdiffat10': csdiff10_m,
-                'killsat10': kills10_m, 'assistsat10': assists10_m, 'deathsat10': deaths10_m,
-            },
-            '15min': {
-                'side': 1, 'firstblood': int(fb_m),
-                'golddiffat10': golddiff10_m, 'xpdiffat10': xpdiff10_m, 'csdiffat10': csdiff10_m,
-                'killsat10': kills10_m, 'assistsat10': assists10_m, 'deathsat10': deaths10_m,
-                'firstdragon': int(fd_m), 'firstherald': int(fh_m), 'firsttower': int(ft_m),
-                'golddiffat15': golddiff15_m, 'xpdiffat15': xpdiff15_m, 'csdiffat15': csdiff15_m,
-                'killsat15': kills15_m, 'assistsat15': assists15_m, 'deathsat15': deaths15_m,
-            },
+            '10min': base10,
+            '15min': {**base10, **base15},
+            '20min': {**base10, **base15, **base20},
+            '25min': {**base10, **base15, **base20,
+                      'firstbaron': int(fb25_m),
+                      'golddiffat25': golddiff25_m, 'xpdiffat25': xpdiff25_m, 'csdiffat25': csdiff25_m,
+                      'killsat25': kills25_m, 'assistsat25': assists25_m, 'deathsat25': deaths25_m},
         }
 
 manual_stats = st.session_state.get('manual_stats', None)
@@ -408,17 +446,17 @@ manual_stats = st.session_state.get('manual_stats', None)
 if manual_stats is not None:
     st.divider()
 
-    probs_manual = {cp: predict_at(manual_stats[cp], cp) for cp in ['10min', '15min']}
+    probs_manual = {cp: predict_at(manual_stats[cp], cp) for cp in CHECKPOINTS}
 
     # ── Timeline ──────────────────────────────────────────────────────────────
     st.subheader("📈 Évolution de la prédiction")
-    fig = render_timeline_1team(probs_manual, ['10min', '15min'])
+    fig = render_timeline_1team(probs_manual, CHECKPOINTS)
     st.pyplot(fig, use_container_width=True); plt.close()
     st.caption("Graphique linéaire — évolution de P(victoire) de ton équipe aux checkpoints 10 et 15 min selon les trois modèles. Trait plein = TabNet, pointillé-triangle = FT-Transformer, tirets = XGBoost. La ligne horizontale marque le seuil 50 %.")
 
     st.divider()
 
-    MANUAL_CPS = ['10min', '15min']
+    MANUAL_CPS = ['10min', '15min', '20min', '25min']
     st.subheader("🔮 Prédictions par checkpoint")
     pred_tabs_m = st.tabs([f"@{CP_LABELS[cp]}" for cp in MANUAL_CPS])
     for pred_tab_m, cp in zip(pred_tabs_m, MANUAL_CPS):
