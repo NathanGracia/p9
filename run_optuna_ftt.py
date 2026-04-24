@@ -16,7 +16,7 @@ import warnings
 warnings.filterwarnings('ignore')
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
-RANDOM_STATE = 42
+RANDOM_STATE = 314
 N_TRIALS = 300
 N_FOLDS = 3
 TARGET = 'result'
