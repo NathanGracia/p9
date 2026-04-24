@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+*.pyo
+.claude/
+data/2025_LoL_esports_match_data_from_OraclesElixir.csv
