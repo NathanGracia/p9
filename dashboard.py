@@ -235,7 +235,7 @@ def render_team_card(col, team_name, side_label, prob_xgb, prob_tab, prob_ftt, a
 # ─── Header ──────────────────────────────────────────────────────────────────
 st.title("LoL Pro Match Predictor")
 st.markdown(
-    "Prédiction de l'issue d'un match pro à **10, 15 et 20 min**.  \n"
+    "Prédiction de l'issue d'un match pro à **10, 15, 20 et 25 min**.  \n"
     "Comparaison **XGBoost** (baseline) vs **TabNet** (Arik & Pfister, 2021) vs **FT-Transformer** (Gorishniy et al., NeurIPS 2021)."
 )
 st.divider()
@@ -304,7 +304,7 @@ with tab_load:
         plt.close()
         st.caption(
             f"Graphique linéaire - évolution de P(victoire) normalisée pour {blue_team} (bleu) "
-            f"et {red_team} (rouge) aux checkpoints 10, 15 et 20 min. "
+            f"et {red_team} (rouge) aux checkpoints 10, 15, 20 et 25 min. "
             f"Trait plein = TabNet, pointillé-triangle = FT-Transformer, tirets = XGBoost. "
             f"La ligne horizontale marque le seuil 50 %."
         )
@@ -452,7 +452,7 @@ if manual_stats is not None:
     st.subheader("Evolution de la prédiction")
     fig = render_timeline_1team(probs_manual, CHECKPOINTS)
     st.pyplot(fig, use_container_width=True); plt.close()
-    st.caption("Graphique linéaire - évolution de P(victoire) de ton équipe aux checkpoints 10 et 15 min selon les trois modèles. Trait plein = TabNet, pointillé-triangle = FT-Transformer, tirets = XGBoost. La ligne horizontale marque le seuil 50 %.")
+    st.caption("Graphique linéaire - évolution de P(victoire) de ton équipe aux checkpoints 10, 15, 20 et 25 min selon les trois modèles. Trait plein = TabNet, pointillé-triangle = FT-Transformer, tirets = XGBoost. La ligne horizontale marque le seuil 50 %.")
 
     st.divider()
 
@@ -510,13 +510,13 @@ if match_loaded or manual_stats is not None:
     st.divider()
     st.subheader("Performances de référence")
     perf = pd.DataFrame({
-        'Checkpoint':      ['@10 min', '@15 min', '@20 min'],
-        'XGBoost Acc':     ['67.96%',  '75.05%',  '78.33%'],
-        'TabNet Acc':      ['69.61%',  '76.29%',  '79.27%'],
-        'FT-Transf. Acc':  ['69.61%',  '76.24%',  '79.46%'],
-        'XGBoost AUC':     ['0.754',   '0.832',   '0.870'],
-        'TabNet AUC':      ['0.766',   '0.834',   '0.872'],
-        'FT-Transf. AUC':  ['0.766',   '0.839',   '0.876'],
+        'Checkpoint':      ['@10 min', '@15 min', '@20 min', '@25 min'],
+        'XGBoost Acc':     ['67.96%',  '75.05%',  '78.33%',  '87.94%'],
+        'TabNet Acc':      ['69.61%',  '76.29%',  '79.27%',  '88.59%'],
+        'FT-Transf. Acc':  ['69.61%',  '76.24%',  '79.46%',  '88.61%'],
+        'XGBoost AUC':     ['0.754',   '0.832',   '0.870',   '0.954'],
+        'TabNet AUC':      ['0.766',   '0.834',   '0.872',   '0.954'],
+        'FT-Transf. AUC':  ['0.766',   '0.839',   '0.876',   '0.957'],
     }).set_index('Checkpoint')
     st.dataframe(perf, use_container_width=True)
     st.caption("9 236 matchs pro · Oracle's Elixir 2025 · FT-Transformer meilleur AUC à partir de @15 min.")
