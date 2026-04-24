@@ -10,7 +10,7 @@ import torch
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-st.set_page_config(page_title="LoL Pro Match Predictor", page_icon="🎮", layout="wide")
+st.set_page_config(page_title="LoL Pro Match Predictor", layout="wide")
 
 CHECKPOINTS = ['10min', '15min', '20min', '25min']
 CP_LABELS   = {'10min': '10 min', '15min': '15 min', '20min': '20 min', '25min': '25 min'}
@@ -215,7 +215,7 @@ def render_team_card(col, team_name, side_label, prob_xgb, prob_tab, prob_ftt, a
             f"{team_name} — {side_label}</div>", unsafe_allow_html=True
         )
         rc = "#1a6b34" if won else "#c0392b"
-        rl = "✅ Victoire (réel)" if won else "❌ Défaite (réel)"
+        rl = "Victoire (réel)" if won else "Défaite (réel)"
         st.markdown(
             f"<div style='background:{rc};padding:6px;border-radius:6px;"
             f"text-align:center;color:white;font-weight:bold;margin-bottom:12px'>{rl}</div>",
@@ -233,7 +233,7 @@ def render_team_card(col, team_name, side_label, prob_xgb, prob_tab, prob_ftt, a
             plt.close()
 
 # ─── Header ──────────────────────────────────────────────────────────────────
-st.title("🎮 LoL Pro Match Predictor")
+st.title("LoL Pro Match Predictor")
 st.markdown(
     "Prédiction de l'issue d'un match pro à **10, 15 et 20 min**.  \n"
     "Comparaison **XGBoost** (baseline) vs **TabNet** (Arik & Pfister, 2021) vs **FT-Transformer** (Gorishniy et al., NeurIPS 2021)."
@@ -241,7 +241,7 @@ st.markdown(
 st.divider()
 
 # ─── Onglets ─────────────────────────────────────────────────────────────────
-tab_load, tab_manual = st.tabs(["📂 Charger un match existant", "✏️ Saisie manuelle"])
+tab_load, tab_manual = st.tabs(["Charger un match existant", "Saisie manuelle"])
 
 match_loaded = False
 
@@ -286,19 +286,19 @@ with tab_load:
             probs_red[cp]  = predict_at(build_stats(red_row,  False, cp), cp)
 
         # Stats summary @15 min
-        st.markdown("**📊 Stats @15 min**")
+        st.markdown("**Stats @15 min**")
         c1, c2, c3, c4, c5, c6 = st.columns(6)
         c1.metric("Gold diff",          f"{blue_row.get('golddiffat15', 0):+.0f}", help=f"Positif = avantage {blue_team}")
         c2.metric(f"Kills {blue_team}", f"{blue_row.get('killsat15', 0):.0f}")
         c3.metric(f"Kills {red_team}",  f"{red_row.get('killsat15', 0):.0f}")
-        c4.metric("First Dragon", "🔵 Blue" if blue_row.get('firstdragon', 0) == 1 else "🔴 Red")
-        c5.metric("First Herald", "🔵 Blue" if blue_row.get('firstherald', 0) == 1 else "🔴 Red")
-        c6.metric("First Tower",  "🔵 Blue" if blue_row.get('firsttower',  0) == 1 else "🔴 Red")
+        c4.metric("First Dragon", "Blue" if blue_row.get('firstdragon', 0) == 1 else "Red")
+        c5.metric("First Herald", "Blue" if blue_row.get('firstherald', 0) == 1 else "Red")
+        c6.metric("First Tower",  "Blue" if blue_row.get('firsttower',  0) == 1 else "Red")
 
         st.divider()
 
         # ── Timeline ──────────────────────────────────────────────────────────
-        st.subheader("📈 Évolution de la prédiction")
+        st.subheader("Evolution de la prédiction")
         fig = render_timeline_2teams(probs_blue, probs_red, blue_team, red_team, CHECKPOINTS)
         st.pyplot(fig, use_container_width=True)
         plt.close()
@@ -312,26 +312,26 @@ with tab_load:
         st.divider()
 
         # ── Team cards — un onglet par checkpoint ────────────────────────────
-        st.subheader("🔮 Prédictions par checkpoint")
+        st.subheader("Prédictions par checkpoint")
         pred_tabs = st.tabs([f"@{CP_LABELS[cp]}" for cp in CHECKPOINTS])
         for pred_tab, cp in zip(pred_tabs, CHECKPOINTS):
             with pred_tab:
                 col_blue, col_mid, col_red = st.columns([5, 1, 5])
-                render_team_card(col_blue, blue_team, "🔵 Blue side",
+                render_team_card(col_blue, blue_team, "Blue side",
                                  probs_blue[cp][0], probs_blue[cp][1], probs_blue[cp][2],
                                  int(blue_row['result']))
                 with col_mid:
-                    st.markdown("<div style='text-align:center;font-size:1.75rem;margin-top:60px' title='Versus'>⚔️</div>",
+                    st.markdown("<div style='text-align:center;font-size:1.75rem;margin-top:60px'>VS</div>",
                                 unsafe_allow_html=True)
-                render_team_card(col_red, red_team, "🔴 Red side",
+                render_team_card(col_red, red_team, "Red side",
                                  probs_red[cp][0], probs_red[cp][1], probs_red[cp][2],
                                  int(red_row['result']))
 
         st.divider()
 
         # ── Interprétabilité ──────────────────────────────────────────────────
-        st.subheader("🔍 Interprétabilité TabNet")
-        tab_loc, tab_glob = st.tabs(["🎯 Ce match (locale)", "📊 Globale (tous les matchs)"])
+        st.subheader("Interprétabilité TabNet")
+        tab_loc, tab_glob = st.tabs(["Ce match (locale)", "Globale (tous les matchs)"])
 
         with tab_loc:
             st.markdown("Quelles features ont **le plus contribué** à la prédiction de **ce match précis** ?")
@@ -416,7 +416,7 @@ with tab_manual:
         assists25_m  = st.number_input("Assists", 0, 90, 14, key="a25m")
         deaths25_m   = st.number_input("Deaths",  0, 50, 8, key="d25m")
 
-    if st.button("🔮 Prédire", type="primary"):
+    if st.button("Prédire", type="primary"):
         base10 = {
             'side': 1, 'firstblood': int(fb_m),
             'golddiffat10': golddiff10_m, 'xpdiffat10': xpdiff10_m, 'csdiffat10': csdiff10_m,
@@ -449,7 +449,7 @@ if manual_stats is not None:
     probs_manual = {cp: predict_at(manual_stats[cp], cp) for cp in CHECKPOINTS}
 
     # ── Timeline ──────────────────────────────────────────────────────────────
-    st.subheader("📈 Évolution de la prédiction")
+    st.subheader("Evolution de la prédiction")
     fig = render_timeline_1team(probs_manual, CHECKPOINTS)
     st.pyplot(fig, use_container_width=True); plt.close()
     st.caption("Graphique linéaire — évolution de P(victoire) de ton équipe aux checkpoints 10 et 15 min selon les trois modèles. Trait plein = TabNet, pointillé-triangle = FT-Transformer, tirets = XGBoost. La ligne horizontale marque le seuil 50 %.")
@@ -457,7 +457,7 @@ if manual_stats is not None:
     st.divider()
 
     MANUAL_CPS = ['10min', '15min', '20min', '25min']
-    st.subheader("🔮 Prédictions par checkpoint")
+    st.subheader("Prédictions par checkpoint")
     pred_tabs_m = st.tabs([f"@{CP_LABELS[cp]}" for cp in MANUAL_CPS])
     for pred_tab_m, cp in zip(pred_tabs_m, MANUAL_CPS):
         with pred_tab_m:
@@ -465,9 +465,9 @@ if manual_stats is not None:
             col1, col2, col3 = st.columns(3)
             for col, name, prob in [(col1, "XGBoost", p_xgb), (col2, "TabNet", p_tab), (col3, "FT-Transformer", p_ftt)]:
                 color = "#1a6b34" if prob >= 0.6 else "#c0392b" if prob <= 0.4 else "#7a5000"
-                label = "✅ Victoire probable" if prob >= 0.6 else "❌ Défaite probable" if prob <= 0.4 else "⚖️ Match serré"
+                label = "Victoire probable" if prob >= 0.6 else "Défaite probable" if prob <= 0.4 else "Match serré"
                 with col:
-                    st.subheader(f"🤖 {name}")
+                    st.subheader(name)
                     st.metric("P(victoire de ton équipe)", f"{prob:.1%}")
                     st.markdown(
                         f"<div style='background:{color};padding:12px;border-radius:8px;"
@@ -478,8 +478,8 @@ if manual_stats is not None:
     st.divider()
 
     # ── Interprétabilité ──────────────────────────────────────────────────────
-    st.subheader("🔍 Interprétabilité TabNet")
-    tab_loc_m, tab_glob_m = st.tabs(["🎯 Cette prédiction (locale)", "📊 Globale (tous les matchs)"])
+    st.subheader("Interprétabilité TabNet")
+    tab_loc_m, tab_glob_m = st.tabs(["Cette prédiction (locale)", "Globale (tous les matchs)"])
 
     with tab_loc_m:
         st.markdown("Quelles features ont **le plus contribué** à **cette prédiction** ?")
@@ -508,7 +508,7 @@ if manual_stats is not None:
 # ─── Performances de référence ────────────────────────────────────────────────
 if match_loaded or manual_stats is not None:
     st.divider()
-    st.subheader("📊 Performances de référence")
+    st.subheader("Performances de référence")
     perf = pd.DataFrame({
         'Checkpoint':      ['@10 min', '@15 min', '@20 min'],
         'XGBoost Acc':     ['67.96%',  '75.05%',  '78.33%'],
