@@ -155,18 +155,18 @@ def render_timeline_2teams(probs_blue, probs_red, blue_team, red_team, checkpoin
         ftt_blue.append(fb); ftt_red.append(fr)
 
     fig, ax = plt.subplots(figsize=(10, 4))
-    ax.plot(labels, tab_blue, 'o-',  color='#1a75ff', lw=2.5, ms=9, label=f'{blue_team} — TabNet',          zorder=5)
-    ax.plot(labels, ftt_blue, '^:',  color='#1a75ff', lw=2.0, ms=8, label=f'{blue_team} — FT-Transformer',  zorder=4, alpha=0.85)
-    ax.plot(labels, xgb_blue, 'o--', color='#1a75ff', lw=1.5, ms=6, label=f'{blue_team} — XGBoost',         alpha=0.4)
-    ax.plot(labels, tab_red,  's-',  color='#cc0000', lw=2.5, ms=9, label=f'{red_team} — TabNet',            zorder=5)
-    ax.plot(labels, ftt_red,  'v:',  color='#cc0000', lw=2.0, ms=8, label=f'{red_team} — FT-Transformer',   zorder=4, alpha=0.85)
-    ax.plot(labels, xgb_red,  's--', color='#cc0000', lw=1.5, ms=6, label=f'{red_team} — XGBoost',          alpha=0.4)
+    ax.plot(labels, tab_blue, 'o-',  color='#1a75ff', lw=2.5, ms=9, label=f'{blue_team} - TabNet',          zorder=5)
+    ax.plot(labels, ftt_blue, '^:',  color='#1a75ff', lw=2.0, ms=8, label=f'{blue_team} - FT-Transformer',  zorder=4, alpha=0.85)
+    ax.plot(labels, xgb_blue, 'o--', color='#1a75ff', lw=1.5, ms=6, label=f'{blue_team} - XGBoost',         alpha=0.4)
+    ax.plot(labels, tab_red,  's-',  color='#cc0000', lw=2.5, ms=9, label=f'{red_team} - TabNet',            zorder=5)
+    ax.plot(labels, ftt_red,  'v:',  color='#cc0000', lw=2.0, ms=8, label=f'{red_team} - FT-Transformer',   zorder=4, alpha=0.85)
+    ax.plot(labels, xgb_red,  's--', color='#cc0000', lw=1.5, ms=6, label=f'{red_team} - XGBoost',          alpha=0.4)
     ax.axhline(0.5, color='gray', linestyle=':', alpha=0.6, lw=1.2)
     ax.fill_between(labels, 0.5, tab_blue, alpha=0.07, color='#1a75ff')
     ax.fill_between(labels, 0.5, tab_red,  alpha=0.07, color='#cc0000')
     ax.set_ylim(0, 1)
     ax.set_ylabel('P(victoire) normalisée')
-    ax.set_title('Évolution de la prédiction au cours du match (normalisée — somme à 100%)')
+    ax.set_title('Évolution de la prédiction au cours du match (normalisée - somme à 100%)')
     ax.legend(fontsize=8, loc='upper right', ncol=2)
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.0%}'))
     for val, color in [(tab_blue[-1], '#1a75ff'), (tab_red[-1], '#cc0000')]:
@@ -212,7 +212,7 @@ def render_team_card(col, team_name, side_label, prob_xgb, prob_tab, prob_ftt, a
         st.markdown(
             f"<div style='background:{side_color};padding:8px 14px;border-radius:8px;"
             f"text-align:center;color:white;font-weight:bold;font-size:1rem;margin-bottom:8px'>"
-            f"{team_name} — {side_label}</div>", unsafe_allow_html=True
+            f"{team_name} - {side_label}</div>", unsafe_allow_html=True
         )
         rc = "#1a6b34" if won else "#c0392b"
         rl = "Victoire (réel)" if won else "Défaite (réel)"
@@ -223,7 +223,7 @@ def render_team_card(col, team_name, side_label, prob_xgb, prob_tab, prob_ftt, a
         )
         for model_name, prob in [("XGBoost", prob_xgb), ("TabNet", prob_tab), ("FT-Transformer", prob_ftt)]:
             vc = "#2ecc71" if prob >= 0.6 else "#e74c3c" if prob <= 0.4 else "#f39c12"
-            st.markdown(f"**{model_name}** — P(victoire) : `{prob:.1%}`")
+            st.markdown(f"**{model_name}** - P(victoire) : `{prob:.1%}`")
             fig, ax = plt.subplots(figsize=(4, 0.4))
             ax.barh(0, prob,       color=vc,       height=0.5)
             ax.barh(0, 1 - prob,   left=prob, color="#ecf0f1", height=0.5)
@@ -246,7 +246,7 @@ tab_load, tab_manual = st.tabs(["Charger un match existant", "Saisie manuelle"])
 match_loaded = False
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TAB 1 — Charger un match existant
+# TAB 1 - Charger un match existant
 # ══════════════════════════════════════════════════════════════════════════════
 with tab_load:
     col_a, col_b = st.columns(2)
@@ -262,7 +262,7 @@ with tab_load:
         red_row   = game_rows[game_rows['side'] == 'Red']
         if len(blue_row) == 0 or len(red_row) == 0:
             continue
-        label = f"{blue_row.iloc[0]['date']} — {blue_row.iloc[0]['teamname']} vs {red_row.iloc[0]['teamname']}"
+        label = f"{blue_row.iloc[0]['date']} - {blue_row.iloc[0]['teamname']} vs {red_row.iloc[0]['teamname']}"
         matches[label] = gid
 
     with col_b:
@@ -303,7 +303,7 @@ with tab_load:
         st.pyplot(fig, use_container_width=True)
         plt.close()
         st.caption(
-            f"Graphique linéaire — évolution de P(victoire) normalisée pour {blue_team} (bleu) "
+            f"Graphique linéaire - évolution de P(victoire) normalisée pour {blue_team} (bleu) "
             f"et {red_team} (rouge) aux checkpoints 10, 15 et 20 min. "
             f"Trait plein = TabNet, pointillé-triangle = FT-Transformer, tirets = XGBoost. "
             f"La ligne horizontale marque le seuil 50 %."
@@ -311,7 +311,7 @@ with tab_load:
 
         st.divider()
 
-        # ── Team cards — un onglet par checkpoint ────────────────────────────
+        # ── Team cards - un onglet par checkpoint ────────────────────────────
         st.subheader("Prédictions par checkpoint")
         pred_tabs = st.tabs([f"@{CP_LABELS[cp]}" for cp in CHECKPOINTS])
         for pred_tab, cp in zip(pred_tabs, CHECKPOINTS):
@@ -345,13 +345,13 @@ with tab_load:
             feat_names = all_models[cp_key]['features']
             col_l1, col_l2 = st.columns(2)
             with col_l1:
-                fig = render_importance_bar(local_b, feat_names, f"{blue_team} — contribution locale")
+                fig = render_importance_bar(local_b, feat_names, f"{blue_team} - contribution locale")
                 st.pyplot(fig, use_container_width=True); plt.close()
-                st.caption(f"Barres horizontales — contribution de chaque variable à la prédiction TabNet pour {blue_team} sur ce match. Couleurs : jaune = gold, violet = XP, vert = CS, rouge = kills/deaths, bleu = objectifs.")
+                st.caption(f"Barres horizontales - contribution de chaque variable à la prédiction TabNet pour {blue_team} sur ce match. Couleurs : jaune = gold, violet = XP, vert = CS, rouge = kills/deaths, bleu = objectifs.")
             with col_l2:
-                fig = render_importance_bar(local_r, feat_names, f"{red_team} — contribution locale")
+                fig = render_importance_bar(local_r, feat_names, f"{red_team} - contribution locale")
                 st.pyplot(fig, use_container_width=True); plt.close()
-                st.caption(f"Barres horizontales — contribution de chaque variable à la prédiction TabNet pour {red_team} sur ce match. Même code couleur que le graphique de gauche.")
+                st.caption(f"Barres horizontales - contribution de chaque variable à la prédiction TabNet pour {red_team} sur ce match. Même code couleur que le graphique de gauche.")
 
         with tab_glob:
             st.markdown("Importance **moyenne** des features TabNet sur l'ensemble du jeu de test.")
@@ -360,15 +360,15 @@ with tab_load:
             cp_key_g = {f"@{CP_LABELS[cp]}": cp for cp in CHECKPOINTS}[cp_glob]
             fig = render_importance_bar(
                 all_models[cp_key_g]['importances'], all_models[cp_key_g]['features'],
-                f"Masques d'attention TabNet (moyennés) — @{CP_LABELS[cp_key_g]}"
+                f"Masques d'attention TabNet (moyennés) - @{CP_LABELS[cp_key_g]}"
             )
             st.pyplot(fig, use_container_width=True); plt.close()
-            st.caption(f"Barres horizontales — importance moyenne des variables pour le modèle TabNet @{CP_LABELS[cp_key_g]}, calculée sur l'ensemble du jeu de test. Une valeur plus élevée indique une variable plus déterminante.")
+            st.caption(f"Barres horizontales - importance moyenne des variables pour le modèle TabNet @{CP_LABELS[cp_key_g]}, calculée sur l'ensemble du jeu de test. Une valeur plus élevée indique une variable plus déterminante.")
 
         match_loaded = True
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TAB 2 — Saisie manuelle
+# TAB 2 - Saisie manuelle
 # ══════════════════════════════════════════════════════════════════════════════
 with tab_manual:
     st.markdown("Stats exprimées du **point de vue de ton équipe**. Positif = ton équipe est en avance.")
@@ -452,7 +452,7 @@ if manual_stats is not None:
     st.subheader("Evolution de la prédiction")
     fig = render_timeline_1team(probs_manual, CHECKPOINTS)
     st.pyplot(fig, use_container_width=True); plt.close()
-    st.caption("Graphique linéaire — évolution de P(victoire) de ton équipe aux checkpoints 10 et 15 min selon les trois modèles. Trait plein = TabNet, pointillé-triangle = FT-Transformer, tirets = XGBoost. La ligne horizontale marque le seuil 50 %.")
+    st.caption("Graphique linéaire - évolution de P(victoire) de ton équipe aux checkpoints 10 et 15 min selon les trois modèles. Trait plein = TabNet, pointillé-triangle = FT-Transformer, tirets = XGBoost. La ligne horizontale marque le seuil 50 %.")
 
     st.divider()
 
@@ -489,9 +489,9 @@ if manual_stats is not None:
         feat_names_m = all_models[cp_key_m]['features']
         local_imp    = get_local_importance(manual_stats[cp_key_m], cp_key_m)
         fig = render_importance_bar(local_imp, feat_names_m,
-                                    f"Ton équipe — contribution locale @{CP_LABELS[cp_key_m]}")
+                                    f"Ton équipe - contribution locale @{CP_LABELS[cp_key_m]}")
         st.pyplot(fig, use_container_width=True); plt.close()
-        st.caption(f"Barres horizontales — contribution de chaque variable à la prédiction TabNet pour cette saisie @{CP_LABELS[cp_key_m]}. Couleurs : jaune = gold, violet = XP, vert = CS, rouge = kills/deaths, bleu = objectifs.")
+        st.caption(f"Barres horizontales - contribution de chaque variable à la prédiction TabNet pour cette saisie @{CP_LABELS[cp_key_m]}. Couleurs : jaune = gold, violet = XP, vert = CS, rouge = kills/deaths, bleu = objectifs.")
 
     with tab_glob_m:
         st.markdown("Importance **moyenne** des features TabNet sur l'ensemble du jeu de test.")
@@ -500,10 +500,10 @@ if manual_stats is not None:
         cp_key_gm = {f"@{CP_LABELS[cp]}": cp for cp in CHECKPOINTS}[cp_glob_m]
         fig = render_importance_bar(
             all_models[cp_key_gm]['importances'], all_models[cp_key_gm]['features'],
-            f"Masques d'attention TabNet (moyennés) — @{CP_LABELS[cp_key_gm]}"
+            f"Masques d'attention TabNet (moyennés) - @{CP_LABELS[cp_key_gm]}"
         )
         st.pyplot(fig, use_container_width=True); plt.close()
-        st.caption(f"Barres horizontales — importance moyenne des variables pour TabNet @{CP_LABELS[cp_key_gm]} sur l'ensemble du jeu de test. Une valeur plus élevée indique une variable plus déterminante.")
+        st.caption(f"Barres horizontales - importance moyenne des variables pour TabNet @{CP_LABELS[cp_key_gm]} sur l'ensemble du jeu de test. Une valeur plus élevée indique une variable plus déterminante.")
 
 # ─── Performances de référence ────────────────────────────────────────────────
 if match_loaded or manual_stats is not None:
