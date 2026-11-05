@@ -48,8 +48,9 @@ def load_dataset():
     df['date'] = pd.to_datetime(df['date']).dt.date
     return df
 
-all_models = load_all_models()
-df_raw     = load_dataset()
+with st.spinner("⏳ Chargement des modèles en cours (~30s au démarrage)..."):
+    all_models = load_all_models()
+    df_raw     = load_dataset()
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 def build_stats(row, is_blue, checkpoint):
